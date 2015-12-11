@@ -54,7 +54,7 @@ func TestUranai(t *testing.T) {
 		return nil
 	})
 
-	for key, _ := range Constellations {
+	for key := range Constellations {
 		// valid format
 		m = interfaces.Message{0, "message", "general", fmt.Sprintf("uranai: %s", key)}
 		err = uranai.DoHandle(m, validPostable)
