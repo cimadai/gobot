@@ -48,9 +48,10 @@ type responseRtmStart struct {
 }
 
 type responseSelf struct {
-	Id string `json:"id"`
+	ID string `json:"id"`
 }
 
+// Slack facade object for using slack api.
 type Slack struct {
 	counter uint64
 	webSocketConnection *websocket.Conn
@@ -75,16 +76,19 @@ func (slack *Slack) Connect(token string) (id string, err error) {
 	return
 }
 
+// Await for a message from slack.
 func (slack *Slack) GetMessage() (m interfaces.Message, err error) {
 	err = websocket.JSON.Receive(slack.webSocketConnection, &m)
 	return
 }
 
+// Post a message to slack.
 func (slack *Slack) PostMessage(m interfaces.Message) error {
-	m.Id = atomic.AddUint64(&slack.counter, 1)
+	m.ID = atomic.AddUint64(&slack.counter, 1)
 	return websocket.JSON.Send(slack.webSocketConnection, m)
 }
 
+// Handling a message on each Slack#handlers.
 func (slack *Slack) DoHandle(m interfaces.Message) error {
 	// ignore error
 	// TODO: Fix me
@@ -96,7 +100,7 @@ func (slack *Slack) DoHandle(m interfaces.Message) error {
 
 // Slack#start does a rtm.start, and returns a websocket URL and user ID.
 // The websocket URL can be used to initiate an RTM session.
-func (slack *Slack) start(token string) (wsUrl string, id string, err error) {
+func (slack *Slack) start(token string) (wsURL string, id string, err error) {
 	url := fmt.Sprintf("https://slack.com/api/rtm.start?token=%s", token)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -122,7 +126,7 @@ func (slack *Slack) start(token string) (wsUrl string, id string, err error) {
 		return
 	}
 
-	wsUrl = respObj.Url
-	id = respObj.Self.Id
+	wsURL = respObj.Url
+	id = respObj.Self.ID
 	return
 }
