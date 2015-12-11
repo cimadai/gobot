@@ -43,7 +43,7 @@ import (
 type responseRtmStart struct {
 	Ok    bool         `json:"ok"`
 	Error string       `json:"error"`
-	Url   string       `json:"url"`
+	URL   string       `json:"url"`
 	Self  responseSelf `json:"self"`
 }
 
@@ -58,7 +58,7 @@ type Slack struct {
 	handlers []interfaces.Handler
 }
 
-// Starts a websocket-based Real Time API session and return the websocket
+// Connect starts a websocket-based Real Time API session and return the websocket
 // and the ID of the (bot-)user whom the token belongs to.
 func (slack *Slack) Connect(token string) (id string, err error) {
 	wsurl, id, err := slack.start(token)
@@ -76,19 +76,19 @@ func (slack *Slack) Connect(token string) (id string, err error) {
 	return
 }
 
-// Await for a message from slack.
+// GetMessage await for a message from slack.
 func (slack *Slack) GetMessage() (m interfaces.Message, err error) {
 	err = websocket.JSON.Receive(slack.webSocketConnection, &m)
 	return
 }
 
-// Post a message to slack.
+// PostMessage posts a message to slack.
 func (slack *Slack) PostMessage(m interfaces.Message) error {
 	m.ID = atomic.AddUint64(&slack.counter, 1)
 	return websocket.JSON.Send(slack.webSocketConnection, m)
 }
 
-// Handling a message on each Slack#handlers.
+// DoHandle handles a message on each Slack#handlers.
 func (slack *Slack) DoHandle(m interfaces.Message) error {
 	// ignore error
 	// TODO: Fix me
@@ -98,7 +98,7 @@ func (slack *Slack) DoHandle(m interfaces.Message) error {
 	return nil
 }
 
-// Slack#start does a rtm.start, and returns a websocket URL and user ID.
+// start does a rtm.start, and returns a websocket URL and user ID.
 // The websocket URL can be used to initiate an RTM session.
 func (slack *Slack) start(token string) (wsURL string, id string, err error) {
 	url := fmt.Sprintf("https://slack.com/api/rtm.start?token=%s", token)
@@ -126,7 +126,7 @@ func (slack *Slack) start(token string) (wsURL string, id string, err error) {
 		return
 	}
 
-	wsURL = respObj.Url
+	wsURL = respObj.URL
 	id = respObj.Self.ID
 	return
 }

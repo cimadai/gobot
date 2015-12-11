@@ -5,10 +5,10 @@ import (
 	"errors"
 )
 
-// Very simple ping-pong handler.
+// PingPongHandler is very simple ping-pong handler.
 type PingPongHandler struct {}
 
-// Handling a message.
+// DoHandle handles a message.
 func (h PingPongHandler) DoHandle(m interfaces.Message, obj interfaces.Postable) (err error) {
 	if m.Type == "message" && strings.HasPrefix(m.Text, "ping") {
 		m.Text = "pong"
